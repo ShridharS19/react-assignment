@@ -19,13 +19,19 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #E5E7EB;
   background: white;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: none !important;
   height: fit-content;
+  /* Prevent any layout shifts */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .product-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-color: #D1D5DB;
+  /* Remove any transform on hover */
+  transform: translateZ(0) !important;
 }
 
 .product-card .p-card-header {
@@ -46,11 +52,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: none;
+  transition: none !important;
+  transform: none !important;
 }
 
 .product-card:hover .product-image {
-  transform: none;
+  transform: none !important;
 }
 
 .category-badge {
@@ -140,59 +147,116 @@
 .product-actions {
   display: flex;
   gap: 0.5rem;
+  /* Prevent any layout shifts */
+  will-change: auto;
 }
 
+/* AGGRESSIVE BUTTON ANTI-FLICKER FIXES */
 .product-actions .p-button {
   flex: 1;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  border-width: 1px;
-  cursor: pointer;
-  user-select: none;
-  position: relative;
-  overflow: hidden;
-  /* Remove all transitions to prevent spazzing */
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  border-width: 1px !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  position: relative !important;
+  overflow: visible !important;
+  
+  /* KILL ALL ANIMATIONS AND TRANSITIONS */
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  
+  /* Prevent layout shifts */
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Force hardware acceleration to prevent flickering */
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  perspective: 1000px !important;
 }
 
+/* Remove ALL PrimeReact button effects */
+.product-actions .p-button:before,
+.product-actions .p-button:after,
+.product-actions .p-button .p-ink,
+.product-actions .p-button .p-ripple {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Button states with NO transitions */
 .product-actions .p-button-outlined {
-  border: 1px solid;
-  background: transparent;
+  border: 1px solid !important;
+  background: transparent !important;
+  transition: none !important;
 }
 
 .product-actions .p-button-info {
-  color: #6366F1;
-  border-color: #6366F1;
-  background: transparent;
+  color: #6366F1 !important;
+  border-color: #6366F1 !important;
+  background: transparent !important;
 }
 
 .product-actions .p-button-info:hover:not(:disabled) {
   background: #6366F1 !important;
   color: white !important;
   border-color: #6366F1 !important;
+  transition: none !important;
+  transform: translateZ(0) !important;
 }
 
 .product-actions .p-button-info:active:not(:disabled) {
   background: #5855EB !important;
-  transform: scale(0.98);
+  transform: translateZ(0) !important;
 }
 
 .product-actions .p-button-danger {
-  color: #DC2626;
-  border-color: #DC2626;
-  background: transparent;
+  color: #DC2626 !important;
+  border-color: #DC2626 !important;
+  background: transparent !important;
 }
 
 .product-actions .p-button-danger:hover:not(:disabled) {
   background: #DC2626 !important;
   color: white !important;
   border-color: #DC2626 !important;
+  transition: none !important;
+  transform: translateZ(0) !important;
 }
 
 .product-actions .p-button-danger:active:not(:disabled) {
   background: #B91C1C !important;
-  transform: scale(0.98);
+  transform: translateZ(0) !important;
+}
+
+/* Prevent focus issues */
+.product-actions .p-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  transform: translateZ(0) !important;
+}
+
+.product-actions .p-button:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+/* Prevent any child element issues */
+.product-actions .p-button * {
+  pointer-events: none !important;
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
 }
 
 /* Load More Button */
@@ -286,20 +350,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Additional button stabilization */
-.product-actions .p-button * {
-  pointer-events: none;
-}
-
-.product-actions .p-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-
-.product-actions .p-button:focus:not(:focus-visible) {
-  box-shadow: none;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .product-list-container {
@@ -322,7 +372,7 @@
   }
   
   .product-actions .p-button {
-    width: 100%;
+    width: 100% !important;
   }
   
   .load-more-button {

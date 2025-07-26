@@ -49,12 +49,30 @@ body {
   font-weight: 500;
 }
 
+/* AGGRESSIVE PRIMEREACT ANIMATION KILLER */
+* {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Allow only specific, controlled transitions */
+.controlled-transition {
+  transition: background-color 0.15s ease !important;
+}
+
 /* Disable PrimeReact ripple effect globally */
 .p-ripple {
   overflow: visible !important;
 }
 
 .p-ink {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.p-ink-active {
   display: none !important;
 }
 
@@ -66,6 +84,8 @@ body {
   transition: none !important;
   animation: none !important;
   position: relative !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
 }
 
 .p-button:focus {
@@ -74,18 +94,22 @@ body {
 }
 
 .p-button:hover {
-  transform: none !important;
+  transform: translateZ(0) !important;
   box-shadow: none !important;
 }
 
 .p-button:active {
-  transform: none !important;
+  transform: translateZ(0) !important;
   box-shadow: none !important;
 }
 
 /* Disable all button ripple effects */
 .p-button .p-ink {
   display: none !important;
+}
+
+.p-button .p-ripple {
+  overflow: visible !important;
 }
 
 /* Disable button focus ring */
@@ -103,16 +127,23 @@ html {
   scroll-behavior: auto !important;
 }
 
+/* CARD FIXES */
 .p-card {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #E5E7EB;
+  transition: none !important;
+  animation: none !important;
+  transform: translateZ(0) !important;
 }
 
+/* DIALOG FIXES */
 .p-dialog {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: none !important;
+  transition: none !important;
 }
 
 .p-dialog-header {
@@ -129,6 +160,7 @@ html {
   border-top: 1px solid #E5E7EB;
 }
 
+/* INPUT FIXES */
 .p-inputtext,
 .p-password input,
 .p-dropdown,
@@ -138,10 +170,12 @@ html {
   border-radius: 6px;
   border: 1px solid #D1D5DB;
   padding: 0.625rem 0.75rem;
-  transition: all 0.15s ease;
   font-size: 0.9rem;
+  transition: none !important;
+  animation: none !important;
 }
 
+/* Only allow focus transitions for inputs */
 .p-inputtext:focus,
 .p-password input:focus,
 .p-dropdown:focus,
@@ -149,6 +183,7 @@ html {
 .p-inputtextarea:focus {
   border-color: #6366F1;
   box-shadow: 0 0 0 1px #6366F1;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
 .p-toast .p-toast-message {
@@ -160,6 +195,8 @@ html {
 .p-confirm-dialog {
   border-radius: 12px;
   min-width: 400px;
+  animation: none !important;
+  transition: none !important;
 }
 
 .p-confirm-dialog .p-dialog-header {
@@ -195,11 +232,14 @@ html {
 .p-confirm-dialog .p-dialog-footer .p-button-danger {
   background: #DC2626;
   border-color: #DC2626;
+  transition: none !important;
 }
 
+/* Allow only background color transitions for confirm buttons */
 .p-confirm-dialog .p-dialog-footer .p-button-danger:hover {
   background: #B91C1C;
   border-color: #B91C1C;
+  transition: background-color 0.15s ease !important;
 }
 
 .p-confirm-dialog .p-dialog-footer .p-button-text {
@@ -212,6 +252,7 @@ html {
   background: #F9FAFB;
   color: #374151;
   border-color: #9CA3AF;
+  transition: background-color 0.15s ease !important;
 }
 
 /* Scrollbar Styling */
@@ -250,7 +291,7 @@ html {
   }
 }
 
-/* Animation Classes */
+/* Animation Classes - Only for specific elements */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -263,7 +304,7 @@ html {
 }
 
 .fade-in {
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.2s ease-out !important;
 }
 
 /* Utility Classes */

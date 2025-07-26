@@ -15,11 +15,31 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('mor_2314');
+  const [password, setPassword] = useState('83r5^_');
   const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useRef<Toast>(null);
-  const { login, loading, error } = useAuth();
+  const { login, loading, error, isAuthenticated } = useAuth();
+
+  console.log('👤 LoginPage render:', { isAuthenticated, loading, isSubmitting });
+
+  // Watch for authentication success
+  useEffect(() => {
+    if (isAuthenticated && !loading && !isSubmitting) {
+      console.log('✅ LoginPage detected authentication success');
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Login successful! Loading products...',
+        life: 2000,
+      });
+      
+      setTimeout(() => {
+        onLoginSuccess();
+      }, 500);
+    }
+  }, [isAuthenticated, loading, isSubmitting, onLoginSuccess]);
 
   const validateForm = (): boolean => {
     const newErrors: { username?: string; password?: string } = {};
@@ -47,25 +67,34 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       return;
     }
 
-    const success = await login({ username, password });
-    
-    if (success) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Login successful!',
-        life: 2000,
-      });
-      // The login state change will automatically trigger the app to show products
-      // No manual timeout needed
-      onLoginSuccess();
-    } else {
+    console.log('🔐 Starting login process...');
+    setIsSubmitting(true);
+
+    try {
+      const success = await login({ username, password });
+      
+      if (!success) {
+        console.log('❌ Login failed');
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Login Failed',
+          detail: error || 'Invalid credentials. Please check your username and password.',
+          life: 5000,
+        });
+        setIsSubmitting(false);
+      } else {
+        console.log('✅ Login success, waiting for state update...');
+        // Don't set isSubmitting to false here - let the useEffect handle the success
+      }
+    } catch (err) {
+      console.error('❌ Login error:', err);
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: error || 'Login failed',
+        detail: 'An unexpected error occurred. Please try again.',
         life: 5000,
       });
+      setIsSubmitting(false);
     }
   };
 
@@ -78,6 +107,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       setErrors(prev => ({ ...prev, password: undefined }));
     }
   }, [username, password, errors]);
+
+  const isLoading = loading || isSubmitting;
 
   const cardHeader = (
     <div className="login-header">
@@ -103,7 +134,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
                 className={`w-full ${errors.username ? 'p-invalid' : ''}`}
-                disabled={loading}
+                disabled={isLoading}
                 autoComplete="username"
               />
               {errors.username && (
@@ -123,7 +154,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 className={`w-full ${errors.password ? 'p-invalid' : ''}`}
                 toggleMask
                 feedback={false}
-                disabled={loading}
+                disabled={isLoading}
                 autoComplete="current-password"
               />
               {errors.password && (
@@ -133,20 +164,25 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
             <Button
               type="submit"
-              label={loading ? undefined : "Sign In"}
+              label={isLoading ? undefined : "Sign In"}
               className="w-full login-button"
-              disabled={loading}
-              icon={loading ? undefined : "pi pi-sign-in"}
+              disabled={isLoading}
+              icon={isLoading ? undefined : "pi pi-sign-in"}
             >
-              {loading && <ProgressSpinner style={{ width: '20px', height: '20px' }} strokeWidth="4" />}
+              {isLoading && (
+                <ProgressSpinner style={{ width: '20px', height: '20px' }} strokeWidth="4" />
+              )}
             </Button>
           </form>
 
           <div className="login-info">
             <div className="demo-credentials">
-              <h4>Demo Credentials:</h4>
+              <h4>Demo Credentials (Pre-filled):</h4>
               <p><strong>Username:</strong> mor_2314</p>
               <p><strong>Password:</strong> 83r5^_</p>
+              <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', fontStyle: 'italic' }}>
+                Just click "Sign In" to continue!
+              </p>
             </div>
           </div>
         </Card>

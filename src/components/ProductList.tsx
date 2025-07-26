@@ -1,5 +1,5 @@
 // src/components/ProductList.tsx
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -37,7 +37,7 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
   const toast = useRef<Toast>(null);
 
   // Pass reset function to parent if provided
-  React.useEffect(() => {
+  useEffect(() => {
     onResetData(() => {
       clearLocalData();
       toast.current?.show({
@@ -100,48 +100,65 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
     return success;
   };
 
-  const handleEditClick = (product: Product) => {
-    // Use requestAnimationFrame to ensure clean execution
-    requestAnimationFrame(() => {
-      setEditingProduct(product);
-    });
-  };
+  const handleEditClick = useCallback((product: Product) => {
+    try {
+      setTimeout(() => {
+        setEditingProduct(product);
+      }, 0);
+    } catch (error) {
+      console.error('Error in handleEditClick:', error);
+    }
+  }, []);
 
-  const handleDeleteClick = (product: Product) => {
-    // Use requestAnimationFrame to prevent scroll jumping
-    requestAnimationFrame(() => {
-      confirmDialog({
-        message: `Are you sure you want to delete "${product.title}"?`,
-        header: 'Delete Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        blockScroll: false,
-        accept: async () => {
-          const success = await deleteProduct(product.id);
-          
-          if (success) {
-            toast.current?.show({
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Product deleted successfully!',
-              life: 3000,
-            });
-          } else {
-            toast.current?.show({
-              severity: 'error',
-              summary: 'Error',
-              detail: 'Failed to delete product',
-              life: 5000,
-            });
-          }
-        },
-        acceptClassName: 'p-button-danger',
-        acceptLabel: 'Yes, Delete',
-        rejectLabel: 'Cancel',
-      });
-    });
-  };
+  const handleDeleteClick = useCallback((product: Product) => {
+    try {
+      setTimeout(() => {
+        confirmDialog({
+          message: `Are you sure you want to delete "${product.title}"?`,
+          header: 'Delete Confirmation',
+          icon: 'pi pi-exclamation-triangle',
+          blockScroll: false,
+          appendTo: 'self', // Append to component instead of body
+          accept: async () => {
+            try {
+              const success = await deleteProduct(product.id);
+              
+              if (success) {
+                toast.current?.show({
+                  severity: 'success',
+                  summary: 'Success',
+                  detail: 'Product deleted successfully!',
+                  life: 3000,
+                });
+              } else {
+                toast.current?.show({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: 'Failed to delete product',
+                  life: 5000,
+                });
+              }
+            } catch (error) {
+              console.error('Error in delete accept:', error);
+              toast.current?.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to delete product',
+                life: 5000,
+              });
+            }
+          },
+          acceptClassName: 'p-button-danger',
+          acceptLabel: 'Yes, Delete',
+          rejectLabel: 'Cancel',
+        });
+      }, 0);
+    } catch (error) {
+      console.error('Error in handleDeleteClick:', error);
+    }
+  }, [deleteProduct]);
 
-  const ProductCard = ({ product }: { product: Product }) => {
+  const ProductCard = React.memo(({ product }: { product: Product }) => {
     const cardHeader = (
       <div className="product-image-container">
         <img
@@ -159,33 +176,47 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
       </div>
     );
 
+    const handleEditButton = useCallback((e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleEditClick(product);
+    }, [product, handleEditClick]);
+
+    const handleDeleteButton = useCallback((e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleDeleteClick(product);
+    }, [product, handleDeleteClick]);
+
     const cardFooter = (
       <div className="product-actions">
         <Button
           icon="pi pi-pencil"
           label="Edit"
           className="p-button-outlined p-button-info product-edit-btn"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleEditClick(product);
-          }}
+          onMouseDown={handleEditButton}
           disabled={loading}
           type="button"
           unstyled={false}
+          style={{ 
+            transition: 'none',
+            animation: 'none',
+            transform: 'translateZ(0)'
+          }}
         />
         <Button
           icon="pi pi-trash"
           label="Delete"
           className="p-button-outlined p-button-danger product-delete-btn"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleDeleteClick(product);
-          }}
+          onMouseDown={handleDeleteButton}
           disabled={loading}
           type="button"
           unstyled={false}
+          style={{ 
+            transition: 'none',
+            animation: 'none',
+            transform: 'translateZ(0)'
+          }}
         />
       </div>
     );
@@ -195,6 +226,11 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
         header={cardHeader}
         footer={cardFooter}
         className="product-card"
+        style={{ 
+          transition: 'none',
+          animation: 'none',
+          transform: 'translateZ(0)'
+        }}
       >
         <div className="product-content">
           <h3 className="product-title">{product.title}</h3>
@@ -216,7 +252,7 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
         </div>
       </Card>
     );
-  };
+  });
 
   const LoadingSkeleton = () => (
     <Card className="product-card">
