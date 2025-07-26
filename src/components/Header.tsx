@@ -3,7 +3,7 @@ import React from 'react';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import { Avatar } from 'primereact/avatar';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 import './Header.css';
 
 interface HeaderProps {
@@ -13,6 +13,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onAddProduct, onResetData }) => {
   const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    console.log('🚪 Header: Logout button clicked');
+    logout();
+  };
 
   const startContent = (
     <div className="header-start">
@@ -50,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ onAddProduct, onResetData }) => {
       <Button
         icon="pi pi-sign-out"
         className="p-button-text logout-btn"
-        onClick={logout}
+        onClick={handleLogout}
         tooltip="Logout"
         tooltipOptions={{ position: 'bottom' }}
       />

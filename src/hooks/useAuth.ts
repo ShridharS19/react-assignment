@@ -1,63 +1,63 @@
 // src/hooks/useAuth.ts
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer } from 'react';
 import { LoginCredentials, User } from '../types';
+
+// Simple reducer to force re-renders
+const forceUpdateReducer = (x: number) => x + 1;
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [authState, setAuthState] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
-
-  // Force re-render trigger
-  const [, forceUpdate] = useState({});
-  const triggerRerender = useCallback(() => {
-    forceUpdate({});
-  }, []);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [, forceUpdate] = useReducer(forceUpdateReducer, 0);
 
   // Initialize auth state on mount
   useEffect(() => {
-    const initializeAuth = async () => {
-      console.log('🔍 Initializing auth...');
+    const initializeAuth = () => {
+      console.log('Initializing auth...');
       
       try {
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
         
-        console.log('📦 Stored token:', !!token);
-        console.log('📦 Stored user:', !!userData);
+        console.log('Stored token:', !!token);
+        console.log('Stored user:', !!userData);
         
         if (token && userData) {
           const parsedUser = JSON.parse(userData);
           if (parsedUser && parsedUser.token === token) {
-            console.log('✅ Valid stored auth found');
+            console.log('Valid stored auth found');
             setUser(parsedUser);
-            setAuthState('authenticated');
           } else {
-            console.log('❌ Invalid stored auth, clearing');
+            console.log('Invalid stored auth, clearing');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            setAuthState('unauthenticated');
+            setUser(null);
           }
         } else {
-          console.log('❌ No stored auth found');
-          setAuthState('unauthenticated');
+          console.log('No stored auth found');
+          setUser(null);
         }
       } catch (err) {
         console.error('Error parsing stored user data:', err);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        setAuthState('unauthenticated');
+        setUser(null);
       } finally {
         setLoading(false);
-        triggerRerender();
+        setIsInitialized(true);
+        forceUpdate(); // Force a re-render
+        console.log('Auth initialization complete');
       }
     };
 
-    initializeAuth();
-  }, [triggerRerender]);
+    // Small delay to ensure proper initialization
+    setTimeout(initializeAuth, 100);
+  }, []);
 
   const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
-    console.log('🔐 Attempting login...');
+    console.log('Attempting login...');
     setLoading(true);
     setError(null);
 
@@ -75,7 +75,7 @@ export const useAuth = () => {
       }
 
       const data = await response.json();
-      console.log('✅ Login API success');
+      console.log('Login API success');
       
       // Create user object
       const userData: User = {
@@ -90,36 +90,37 @@ export const useAuth = () => {
       };
 
       // Store in localStorage
-      console.log('💾 Storing auth data...');
+      console.log('Storing auth data...');
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(userData));
       
-      // Update state
-      console.log('🔄 Updating auth state...');
+      // Update state and force re-render
+      console.log('Setting user state...');
       setUser(userData);
-      setAuthState('authenticated');
       setError(null);
       setLoading(false);
       
-      // Force component re-render
+      // Force re-render after state update
       setTimeout(() => {
-        triggerRerender();
-        console.log('🔄 Triggered re-render');
+        forceUpdate();
+        console.log('Forced re-render after login');
       }, 100);
       
+      console.log('Login complete, user set:', userData.username);
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
-      console.error('❌ Login failed:', errorMessage);
+      console.error('Login failed:', errorMessage);
       setError(errorMessage);
-      setAuthState('unauthenticated');
+      setUser(null);
       setLoading(false);
+      forceUpdate();
       return false;
     }
-  }, [triggerRerender]);
+  }, []);
 
   const logout = useCallback(() => {
-    console.log('🚪 Logging out...');
+    console.log('Logging out...');
     
     // Clear localStorage
     localStorage.removeItem('token');
@@ -129,28 +130,28 @@ export const useAuth = () => {
     localStorage.removeItem('modified_products');
     localStorage.removeItem('added_products');
     
-    // Update state
+    // Update state and force re-render
     setUser(null);
     setError(null);
-    setAuthState('unauthenticated');
     setLoading(false);
     
-    // Force component re-render
+    // Force re-render after state update
     setTimeout(() => {
-      triggerRerender();
-      console.log('🔄 Logout - Triggered re-render');
+      forceUpdate();
+      console.log('Forced re-render after logout');
     }, 100);
-  }, [triggerRerender]);
+    
+    console.log('Logout complete, user cleared');
+  }, []);
 
-  const isAuthenticated = authState === 'authenticated' && !!user?.token;
-  const isInitialized = authState !== 'checking';
+  const isAuthenticated = !!user?.token;
 
-  console.log('🔍 Auth Hook State:', {
-    authState,
+  console.log('Auth Hook State:', {
     isAuthenticated,
     isInitialized,
     hasUser: !!user,
-    loading
+    loading,
+    username: user?.username
   });
 
   return {
@@ -161,6 +162,5 @@ export const useAuth = () => {
     logout,
     isAuthenticated,
     isInitialized,
-    authState, // Export for debugging
   };
 };
