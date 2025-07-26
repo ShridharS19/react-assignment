@@ -54,11 +54,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         severity: 'success',
         summary: 'Success',
         detail: 'Login successful!',
-        life: 3000,
+        life: 2000,
       });
-      setTimeout(() => {
-        onLoginSuccess();
-      }, 1000);
+      // The login state change will automatically trigger the app to show products
+      // No manual timeout needed
+      onLoginSuccess();
     } else {
       toast.current?.show({
         severity: 'error',
@@ -81,7 +81,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
   const cardHeader = (
     <div className="login-header">
-      <i className="pi pi-shopping-cart" style={{ fontSize: '2rem', color: '#6366F1' }} />
+      <i className="pi pi-shopping-cart" style={{ fontSize: '2rem', color: 'white' }} />
       <h2>Product Manager</h2>
       <p>Sign in to manage your products</p>
     </div>
@@ -104,6 +104,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 placeholder="Enter your username"
                 className={`w-full ${errors.username ? 'p-invalid' : ''}`}
                 disabled={loading}
+                autoComplete="username"
               />
               {errors.username && (
                 <small className="p-error">{errors.username}</small>
@@ -123,6 +124,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 toggleMask
                 feedback={false}
                 disabled={loading}
+                autoComplete="current-password"
               />
               {errors.password && (
                 <small className="p-error">{errors.password}</small>

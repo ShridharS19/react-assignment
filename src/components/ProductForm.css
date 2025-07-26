@@ -1,13 +1,13 @@
 /* src/components/ProductForm.css */
 .product-form-dialog .p-dialog-header {
-  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  background: #6366F1;
   color: white;
   border-radius: 12px 12px 0 0;
   padding: 1.5rem;
 }
 
 .product-form-dialog .p-dialog-content {
-  padding: 1.5rem;
+  padding: 0;
   background: #FAFAFA;
 }
 
@@ -22,25 +22,27 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
 .form-header i {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
 }
 
 .product-form {
   background: white;
   padding: 1.5rem;
+  margin: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #E5E7EB;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .field {
@@ -54,9 +56,9 @@
 }
 
 .field-label {
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .required {
@@ -67,10 +69,11 @@
 .product-form .p-inputnumber,
 .product-form .p-dropdown,
 .product-form .p-inputtextarea {
-  border-radius: 8px;
-  border: 2px solid #E5E7EB;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #D1D5DB;
+  transition: all 0.15s ease;
+  font-size: 0.9rem;
+  padding: 0.625rem 0.75rem;
 }
 
 .product-form .p-inputtext:focus,
@@ -78,7 +81,7 @@
 .product-form .p-dropdown:focus-within,
 .product-form .p-inputtextarea:focus {
   border-color: #6366F1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 1px #6366F1;
 }
 
 .product-form .p-inputtext.p-invalid,
@@ -86,7 +89,7 @@
 .product-form .p-dropdown.p-invalid,
 .product-form .p-inputtextarea.p-invalid {
   border-color: #EF4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 1px #EF4444;
 }
 
 .p-error {
@@ -101,30 +104,32 @@
 }
 
 .image-preview img {
-  max-width: 150px;
-  max-height: 150px;
+  max-width: 120px;
+  max-height: 120px;
   object-fit: cover;
   border-radius: 8px;
-  border: 2px solid #E5E7EB;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .form-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .form-footer .p-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  font-size: 0.9rem;
 }
 
 .form-footer .p-button-primary {
-  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-  border: none;
+  background: #6366F1;
+  border: 1px solid #6366F1;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,20 +137,26 @@
 }
 
 .form-footer .p-button-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5855EB 0%, #7C3AED 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+  background: #5855EB;
+  border-color: #5855EB;
 }
 
 .form-footer .p-button-text {
   color: #6B7280;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #D1D5DB;
+  background: transparent;
 }
 
 .form-footer .p-button-text:hover:not(:disabled) {
   background: #F9FAFB;
   color: #374151;
-  border-color: #D1D5DB;
+  border-color: #9CA3AF;
+}
+
+.form-footer .p-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Responsive Design */
@@ -159,17 +170,22 @@
     grid-column: 1;
   }
   
-  .product-form-dialog .p-dialog-content,
+  .product-form-dialog .p-dialog-content {
+    padding: 0;
+  }
+  
   .product-form-dialog .p-dialog-footer {
     padding: 1rem;
   }
   
   .product-form {
     padding: 1rem;
+    margin: 1rem;
   }
   
   .form-footer {
     flex-direction: column-reverse;
+    gap: 0.5rem;
   }
   
   .form-footer .p-button {

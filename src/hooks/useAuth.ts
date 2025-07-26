@@ -14,8 +14,10 @@ export const useAuth = () => {
     
     if (token && userData) {
       try {
-        setUser(JSON.parse(userData));
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
       } catch (err) {
+        console.error('Error parsing user data:', err);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
@@ -54,10 +56,14 @@ export const useAuth = () => {
         token: data.token,
       };
 
+      // Store in localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(userData));
+      
+      // Update state immediately - this will trigger the UI update
       setUser(userData);
       setLoading(false);
+      
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -70,6 +76,7 @@ export const useAuth = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
+    setError(null);
   };
 
   const isAuthenticated = !!user;

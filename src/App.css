@@ -10,18 +10,21 @@ body {
   background-color: #F8FAFC;
   color: #1F2937;
   line-height: 1.6;
+  scroll-behavior: auto;
 }
 
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  scroll-behavior: auto;
 }
 
 .app-main {
   flex: 1;
-  background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+  background: #F8FAFC;
   min-height: calc(100vh - 80px);
+  scroll-behavior: auto;
 }
 
 .app-loading {
@@ -29,7 +32,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
 }
 
 .loading-content {
@@ -42,35 +45,88 @@ body {
 }
 
 .loading-content p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
-/* Global PrimeReact Theme Overrides */
+/* Disable PrimeReact ripple effect globally */
+.p-ripple {
+  overflow: visible !important;
+}
+
+.p-ink {
+  display: none !important;
+}
+
+/* Global PrimeReact Theme Overrides - Completely disable animations */
 .p-button {
-  font-family: inherit;
-  font-weight: 600;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  transition: none !important;
+  animation: none !important;
+  position: relative !important;
 }
 
 .p-button:focus {
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.p-button:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.p-button:active {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable all button ripple effects */
+.p-button .p-ink {
+  display: none !important;
+}
+
+/* Disable button focus ring */
+.p-button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Prevent scroll behavior issues */
+* {
+  scroll-behavior: auto !important;
+}
+
+html {
+  scroll-behavior: auto !important;
 }
 
 .p-card {
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #E5E7EB;
 }
 
 .p-dialog {
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 .p-dialog-header {
   border-bottom: 1px solid #E5E7EB;
+  padding: 1.5rem;
+}
+
+.p-dialog-content {
+  padding: 1.5rem;
+}
+
+.p-dialog-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #E5E7EB;
 }
 
 .p-inputtext,
@@ -81,8 +137,9 @@ body {
   font-family: inherit;
   border-radius: 6px;
   border: 1px solid #D1D5DB;
-  padding: 0.75rem;
-  transition: all 0.2s ease;
+  padding: 0.625rem 0.75rem;
+  transition: all 0.15s ease;
+  font-size: 0.9rem;
 }
 
 .p-inputtext:focus,
@@ -99,22 +156,67 @@ body {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
+/* Confirm Dialog Improvements */
 .p-confirm-dialog {
   border-radius: 12px;
+  min-width: 400px;
 }
 
 .p-confirm-dialog .p-dialog-header {
   background: #FEF2F2;
   border-bottom: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+.p-confirm-dialog .p-dialog-content {
+  padding: 2rem 1.5rem;
 }
 
 .p-confirm-dialog .p-confirm-dialog-icon {
   color: #EF4444;
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.p-confirm-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: #FAFAFA;
+}
+
+.p-confirm-dialog .p-dialog-footer .p-button {
+  min-width: 80px;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+}
+
+.p-confirm-dialog .p-dialog-footer .p-button-danger {
+  background: #DC2626;
+  border-color: #DC2626;
+}
+
+.p-confirm-dialog .p-dialog-footer .p-button-danger:hover {
+  background: #B91C1C;
+  border-color: #B91C1C;
+}
+
+.p-confirm-dialog .p-dialog-footer .p-button-text {
+  background: transparent;
+  color: #6B7280;
+  border: 1px solid #D1D5DB;
+}
+
+.p-confirm-dialog .p-dialog-footer .p-button-text:hover {
+  background: #F9FAFB;
+  color: #374151;
+  border-color: #9CA3AF;
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -123,7 +225,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #CBD5E1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -132,7 +234,7 @@ body {
 
 /* Selection Styling */
 ::selection {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(99, 102, 241, 0.15);
   color: #1F2937;
 }
 
@@ -141,13 +243,18 @@ body {
   body {
     font-size: 14px;
   }
+  
+  .p-confirm-dialog {
+    min-width: 90vw;
+    max-width: 400px;
+  }
 }
 
 /* Animation Classes */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -156,7 +263,7 @@ body {
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
 /* Utility Classes */

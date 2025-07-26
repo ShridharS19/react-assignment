@@ -100,31 +100,44 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
     return success;
   };
 
-  const handleDeleteProduct = (product: Product) => {
-    confirmDialog({
-      message: `Are you sure you want to delete "${product.title}"?`,
-      header: 'Delete Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: async () => {
-        const success = await deleteProduct(product.id);
-        
-        if (success) {
-          toast.current?.show({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Product deleted successfully!',
-            life: 3000,
-          });
-        } else {
-          toast.current?.show({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to delete product',
-            life: 5000,
-          });
-        }
-      },
-      acceptClassName: 'p-button-danger',
+  const handleEditClick = (product: Product) => {
+    // Use requestAnimationFrame to ensure clean execution
+    requestAnimationFrame(() => {
+      setEditingProduct(product);
+    });
+  };
+
+  const handleDeleteClick = (product: Product) => {
+    // Use requestAnimationFrame to prevent scroll jumping
+    requestAnimationFrame(() => {
+      confirmDialog({
+        message: `Are you sure you want to delete "${product.title}"?`,
+        header: 'Delete Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        blockScroll: false,
+        accept: async () => {
+          const success = await deleteProduct(product.id);
+          
+          if (success) {
+            toast.current?.show({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Product deleted successfully!',
+              life: 3000,
+            });
+          } else {
+            toast.current?.show({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to delete product',
+              life: 5000,
+            });
+          }
+        },
+        acceptClassName: 'p-button-danger',
+        acceptLabel: 'Yes, Delete',
+        rejectLabel: 'Cancel',
+      });
     });
   };
 
@@ -151,16 +164,28 @@ const ProductList: React.FC<ProductListProps> = ({ showAddForm, onHideAddForm, o
         <Button
           icon="pi pi-pencil"
           label="Edit"
-          className="p-button-outlined p-button-info"
-          onClick={() => setEditingProduct(product)}
+          className="p-button-outlined p-button-info product-edit-btn"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleEditClick(product);
+          }}
           disabled={loading}
+          type="button"
+          unstyled={false}
         />
         <Button
           icon="pi pi-trash"
           label="Delete"
-          className="p-button-outlined p-button-danger"
-          onClick={() => handleDeleteProduct(product)}
+          className="p-button-outlined p-button-danger product-delete-btn"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDeleteClick(product);
+          }}
           disabled={loading}
+          type="button"
+          unstyled={false}
         />
       </div>
     );
