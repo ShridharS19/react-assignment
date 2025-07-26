@@ -37,7 +37,7 @@ Before running this application, make sure you have:
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/ShridharS19/react-assignment.git
 cd product-management-app
 ```
 
